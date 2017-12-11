@@ -1,0 +1,11 @@
+Chapter 3
+
+Two: Deciding on Important Variables
+Various statistics can be used to judge the quality of a model. These include Mallows' Cpm Akaike information criterion (AIC), Bayesian information criterion (BIC), and adjusted R2.
+Check differences between forward selection, backward seletion and mixed selection.
+Confidence interval x Prediction interval
+What is contrast for Linear Regression?
+
+Hierarquical principle: If we include an interaction in a model, we should also include the main effects,even if the p-values associated with their coefficients are not significant.
+
+
