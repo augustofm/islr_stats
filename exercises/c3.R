@@ -182,3 +182,197 @@ tstatR
 round(coef(summary(lm(y~x)))[2,"t value"] - coef(summary(lm(x~y)))[2,"t value"],3)==0 #?
 
 ### QUESTION 12 ----
+
+# a) When abs(x) is equal to abs(y), or at least comes from the same
+# distribution
+
+# b)
+x <- rnorm(100,2)
+y <- rnorm(100,0.5)
+coef(lm(y~x+0))
+coef(lm(x~y+0))
+
+# c)
+x <- rnorm(100,2)
+y <- -x
+coef(lm(y~x+0))
+coef(lm(x~y+0))
+
+### QUESTION 13 ----
+
+set.seed(1)
+
+# a)
+x <- rnorm(100, 0, 1)
+
+# b)
+eps <- rnorm(100, 0, 0.25)
+
+# c)
+y <- - 1 + 0.5*x + eps
+# Obviously the length of y is also 100
+length(y)
+lm.fit1 <- lm(y~x)
+coef(lm.fit1)
+
+# d)
+plot(x, y)
+# The plot shows a linear relationship among the data
+# with low leverage values and well sparced.
+
+# e) Comparing the coefficients
+# The intercept was very close to 1, with 0.9% error
+summary(lm(y~x))
+#and 0.02425 std. error
+# The coefficient was also very close to 0.5, 
+# which 0.2693 std. error
+plot(x, y, lwd=2, col="blue", pch=4)+abline(lm.fit1)
+legend("top", "(x,y)", pch=4, title="Least squared regression")
+
+# g)
+lm.fit2 <- lm(y~x+I(x^2))
+summary(lm.fit2)
+# No evidence that the quadratic term would improv
+# the model fit, it's p-value is rather high.
+
+# h)
+eps <- rnorm(100, 0, 0.05)
+y <- - 1 + 0.5*x + eps
+lm.fit2 <- lm(y~x)
+summary(lm.fit2)
+plot(x, y, lwd=2, col="blue", pch=4)+abline(lm.fit2)
+legend("top", "(x,y)", pch=4, title="Least squared regression")
+# squared R improved from 0.7542 to 0.9868
+
+# i)
+eps <- rnorm(100, 0, 0.5)
+y <- - 1 + 0.5*x + eps
+lm.fit3 <- lm(y~x)
+summary(lm.fit3)
+plot(x, y, lwd=2, col="blue", pch=4)+abline(lm.fit3)
+legend("top", "(x,y)", pch=4, title="Least squared regression")
+# squared R decresead from 0.7542 to 0.4556 with
+# more noise in the data
+
+# j) 
+#FIT 1
+# For the Intercept
+aux <- predict(lm.fit1, data.frame(x=c(0)), interval = "confidence")
+aux
+#For the x Coefficient
+aux <- predict(lm.fit1, data.frame(x=c(1)), interval = "confidence")
+aux-lm.fit1$coefficients[1]
+
+#FIT 2
+# For the Intercept
+aux <- predict(lm.fit2, data.frame(x=c(0)), interval = "confidence")
+aux
+#For the x Coefficient
+aux <- predict(lm.fit2, data.frame(x=c(1)), interval = "confidence")
+aux-lm.fit2$coefficients[1]
+
+#FIT 3
+# For the Intercept
+aux <- predict(lm.fit3, data.frame(x=c(0)), interval = "confidence")
+aux
+#For the x Coefficient
+aux <- predict(lm.fit3, data.frame(x=c(1)), interval = "confidence")
+aux-lm.fit3$coefficients[1]
+
+
+### QUESTION 14 ----
+
+# a) 
+set.seed(1)
+x1 <- runif(100)
+x2 <- 0.5*x1+rnorm(100)/10
+y <- 2+2*x1+0.3*x2+rnorm(100)
+lm.fit <- lm(y~x1+x2)
+coef(lm.fit)
+plot(x1,x2)
+
+# c) B0 and B1 are very close to the true coefficients
+# though B2 is much higher
+summary(lm.fit)
+# We can see that p-value for B2 is non-significant
+# So the null hypothesis can be true
+
+# e) 
+lm.fit2 <- lm(y~x1)
+summary(lm.fit2)
+coef(lm.fit2)
+# Yes, we can reject the null Hypothesis
+
+# f)
+summary(lm.fit)
+summary(lm.fit2)
+# the estimate for B1 is much higher when the null hypothesis
+# for B2 is true, besides squared-R is higher as well.
+
+# g)
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+
+lm.fit_new <- lm(y~x1+x2)
+lm.fit2_new <- lm(y~x1)
+summary(lm.fit_new)
+# Interestingly, the null hypothesis for B0 cannot be rejected 
+# any longer
+summary(lm.fit2_new)
+# squared-R decreases a lot due to this last observation
+# for x1=0.1, y should be near 2.2, it is 6 instead.
+
+require(data.table)
+dt <- data.table(y, x1, x2)
+pairs(dt)
+boxplot(dt)
+# The new observation is both an outlier and 
+# a high leverage point, since it affects too
+# much the fit, even though it is not similar 
+# to the other points
+
+### QUESTION 15 ----
+
+rm(Boston)
+require(ISLR)
+dt <- data.table(Boston)
+
+# a)
+names(dt)
+str(dt)
+attach(dt)
+coef <- c(NA)
+for (i in 2:ncol(dt)){
+  cat(paste0("\n\n\nPredictor: ", names(dt)[i]))
+  lm.fit.un <- lm(crim~get(names(dt)[i]))
+#  print(summary(lm(crim~get(names(dt)[i]))))
+  coef <- c(coef, coef(lm.fit.un)[2])
+}
+
+# chars seems to be a predictor with no huge effect on the model
+lm.fit <- lm(crim~.,dt)
+summary(lm.fit)
+
+# b)
+# We can reject the null hypothesis for zn, nox, dis, rad, black, lstat, medv 
+
+
+aux <- coef(lm.fit)
+dt2 <- data.table("predictor"=names(aux), "coef_mu"=aux)
+dt1 <- data.table("predictor"=names(aux), "coef_un"=coef)
+p <- merge(dt1, dt2)
+require(ggplot2)
+ggplot(na.omit(p), aes(x=coef_un, y=coef_mu))+geom_point(aes(col=predictor))
+
+# the predictor nox seems to be very different 
+
+# d)
+for (i in 2:ncol(dt)){
+  cat(paste0("\n\n\nPredictor: ", names(dt)[i]))
+  lm.fit.un <- lm(crim~get(names(dt)[i])+I(get(names(dt)[i])^2)+I(get(names(dt)[i])^3))
+  print(summary(lm.fit.un))
+  #coef <- c(coef, coef(lm.fit.un)[2])
+}
+# The ones with strong non-linearity:
+# indus, nox, dis, ptratio, medv
