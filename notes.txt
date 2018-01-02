@@ -8,4 +8,10 @@ What is contrast for Linear Regression?
 
 Hierarquical principle: If we include an interaction in a model, we should also include the main effects,even if the p-values associated with their coefficients are not significant.
 
+Bayes estimation leads to the lowest prediction error, so having a LDA error close to the Bayes one would mean a good model fit, however it takes into account a threshold of 0.5 for the class probabilities, and for many cases we are much more 
+insterested in True positive rates for both classes. ROC curve 
+can be used for different threshold to check that problem.
+QDA performs better than LDA when the bayes decision boundary is not linear, so that the two Gaussians classes do not share a common correlation. 
+QDA estimates a separate covariance matrix for each class, for a total of Kp(p+1)/2 parameters. K times the LDA number, but it may be worth it if the boundary is not linear.
+
 
