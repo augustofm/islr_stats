@@ -15,3 +15,4 @@ QDA performs better than LDA when the bayes decision boundary is not linear, so 
 QDA estimates a separate covariance matrix for each class, for a total of Kp(p+1)/2 parameters. K times the LDA number, but it may be worth it if the boundary is not linear.
 
 
+When the true decision boundaries are linear, then the LDA and ogistic regression approaches will tend to perform well. When the boundaries are moderately non-linear, QDA ma give better results. Finally, for much more complicated decision boundaries, a non-parametric approach such as KNN can be superior. But the level of smoothness for a non-parametric approach must be chosen carefully. 
