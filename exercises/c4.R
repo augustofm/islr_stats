@@ -171,3 +171,77 @@ table(knn.fit, test[, mpg01])
 # and the test error
 
 ## QUESTION 12 ----
+
+# a)
+Power <- function()
+  print(2^3)
+
+Power()
+
+# b)
+Power2 <- function(x, a)
+  print(x^a)
+
+Power2(3,8)
+
+# c)
+Power2(10,3)
+Power2(8,17)
+Power2(131,3)
+
+# d)
+Power3 <- function(x,a)
+  return(x^a)
+
+# e)
+Power2 <- function(x, a)
+  return(x^a)
+
+x <- 1:10
+y <- Power2(x,2)
+
+plot(x, y, col="red", xlab="x",
+     ylab="x^2")
+plot(x, log(y), col="red", xlab="x",
+     ylab="x^2")
+plot(log(x), y, col="red", xlab="x",
+     ylab="x^2")
+plot(log(x), log(y), col="red", xlab="x",
+     ylab="x^2")
+
+# f)
+PlotPower <- function(x,a)
+  plot(x,x^a,col="red",xlab="x",ylab="x^a")
+PlotPower(1:10,3)
+
+
+## QUESTION 13 ----
+# Predict whether or not a given suburb
+# has a crime rate above or below de median
+dt <- data.table(Boston)
+str(dt)
+dt[crim < median(crim),class:=0] #below
+dt[crim >= median(crim),class:=1] #above
+
+# splitting dataset
+dt <- sample(dt)
+dt.train <- dt[1:420]
+dt.test <- dt[421:nrow(dt),]
+
+# logistic regression
+glm.fit <- glm(class ~ ., data = dt.train)
+summary(glm.fit)
+# important variables: nox and ptratio
+glm.fit <- glm(class ~ nox + age + rad + medv, data = dt, family = binomial)
+glm.prob <- data.table("prob" = predict(glm.fit, dt.train,type = "response"))
+glm.prob[prob > 0.5, pred := 1]
+glm.prob[is.na(pred),pred := 0]
+table(glm.prob$pred, dt.train$class)
+# Overall accuracy = 363/420 = 86.42% using all the data for training 
+glm.prob <- data.table("prob" = predict(glm.fit, dt.test,type = "response"))
+glm.prob[prob > 0.5, pred := 1]
+glm.prob[is.na(pred),pred := 0]
+table(glm.prob$pred, dt.test$class)
+# Overall accuracy = 76/86 = 81.39% using test 
+
+# linear discriminant analysis
