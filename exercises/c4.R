@@ -245,3 +245,49 @@ table(glm.prob$pred, dt.test$class)
 # Overall accuracy = 76/86 = 81.39% using test 
 
 # linear discriminant analysis
+lda.fit <- lda(class ~ nox + age + rad + medv, data = dt.train)
+summary(lda.fit)
+pred <- predict(lda.fit, dt.test)
+table(pred$class, dt.test$class)
+# Overall accuracy = 75/86 = 87.21% for test
+
+# linear discriminant analysis
+require(class)
+
+
+dt.train <- dt[1:420, .(nox, age, rad, medv, class)]
+dt.test <- dt[421:nrow(dt),.(nox, age, rad, medv, class)]
+
+k <- 1
+knn.fit <- knn(dt.train, dt.test, dt.train$class, k = k)
+table(knn.fit, dt.test$class)
+# Overall accuracy = 72/86 = 83.72% for test
+
+k <- 3
+knn.fit <- knn(dt.train, dt.test, dt.train$class, k = k)
+table(knn.fit, dt.test$class)
+# Overall accuracy = 72/86 = 82.55% for test
+
+k <- 5
+knn.fit <- knn(dt.train, dt.test, dt.train$class, k = k)
+table(knn.fit, dt.test$class)
+# Overall accuracy = 72/86 = 82.55% for test
+
+k <- 8
+knn.fit <- knn(dt.train, dt.test, dt.train$class, k = k)
+table(knn.fit, dt.test$class)
+# Overall accuracy = 72/86 = 81.39% for test
+
+#If kNN is used for all the predictores instead:
+dt.train <- dt[1:420]
+dt.test <- dt[421:nrow(dt),]
+k <- 3
+knn.fit <- class::knn(dt.train, dt.test, dt.train$class, k = k)
+table(knn.fit, dt.test$class)
+# Overall accuracy = 78/86 = 90.70% for test
+# But how do I assure that this is not an overfit 
+# or a misleading set of predictors?
+
+# The model that best fitted the class was the LDA
+# for the subset of variables with low p-value
+# and kNN if all the variables are used.
