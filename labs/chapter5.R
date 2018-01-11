@@ -4,7 +4,7 @@ library(ISLR)
 library(data.table)
 library(class)
 
-# 5.3.1 ----
+## 5.3.1 The Validation Set Approach ----
 
 set.seed(1)
 train = sample(392,196)
@@ -41,7 +41,7 @@ mean((dt[,mpg] - predict(lm.fit3, dt))[-train]^2)
 # A model that predicts mpg using a quadratic function of horsepower
 # performs better than a model that involves only a linear function of horsepower
 
-# 5.3.2 ----
+## Leave-One-Out Cross-Valiation ----
 dt <- data.table(Auto)
 # If "binomial" is not set into glm model, it fits 
 # a linear model instead
@@ -59,12 +59,29 @@ cv.err <- cv.glm(dt, glm.fit)
 cv.err$delta
 
 cv.error <- rep(0,5)
-for (i in 1:5){
-  glm.fit <- glm(mpg ~ poly(horsepower, i), data = dt)
-  cv.error[i] <- cv.glm(dt, glm.fit)$delta[1]  
-}
+system.time({
+  for (i in 1:length(cv.error)){
+    glm.fit <- glm(mpg ~ poly(horsepower, i), data = dt)
+    cv.error[i] <- cv.glm(dt, glm.fit)$delta[1]  
+  }
+})
 cv.error
 
 # there is a sharp drop in the estimated test MSE
 # between the linear and quadratic fits, 
 # but no clear improvement from using higher-orer polynomials
+
+## 5.3.3 k-Fold Cross-Validation ----
+set.seed(17)
+cv.error.10 <- rep(0,10)
+system.time({
+    for (i in 1:length(cv.error.10)){
+    glm.fit <- glm(mpg ~ poly(horsepower, i), data = dt)
+    cv.error.10[i] <- cv.glm(dt, glm.fit, K = 10)$delta[1]  
+   }
+})
+cv.error.10
+
+## 5.3.4 The Bootstrap ----
+
+# 0.641 seg (K=10) x 9.921 seg (K=N)
