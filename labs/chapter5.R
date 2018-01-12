@@ -81,7 +81,45 @@ system.time({
    }
 })
 cv.error.10
+# 0.641 seg (K=10) x 9.921 seg (K=N)
 
 ## 5.3.4 The Bootstrap ----
 
-# 0.641 seg (K=10) x 9.921 seg (K=N)
+alpha.fn <- function(data, index){
+  X <- data$X[index]
+  Y <- data$Y[index]
+  return((var(Y) - cov(X,Y))/(var(X) + var(Y)- 2*cov(X,Y)))
+}
+
+alpha.fn(Portfolio,1:100)
+
+set.seed(1)
+alpha.fn(Portfolio, sample(100, 100, replace = T))
+
+# Automatically performing this command many time
+# and recording all of the corresponding estimates for alpha
+boot(Portfolio, alpha.fn, R=1000)
+
+# Estimating the Accuracy of a Linear Regression Model
+boot.fn <- function(data,index)
+  return(coef(lm(mpg ~ horsepower, data = data, subset = index)))
+boot.fn(Auto, 1:392)
+set.seed(1)
+boot.fn(Auto, sample(392,392,replace = T))
+boot.fn(Auto, sample(392,392,replace = T))
+boot(Auto, boot.fn,1000)
+# But the std. error for these coefficients seem to differ
+# when we simply run the lm model, due to the assumption
+# that the linear model is correct (thus the parameter sigma-squared
+# is estimated as so).
+summary(lm(mpg ~ horsepower, data = Auto))$coef
+
+# Assessing a quadratic model 
+boot.fn <- function(data,index)
+  coefficients(lm(mpg ~ horsepower + I(horsepower^2), data = data, subset = index))
+set.seed(1)
+boot(Auto, boot.fn, 1000)
+
+summary(lm(mpg ~ horsepower + I(horsepower^2), data = Auto))$coef
+# now the standard errors are much more similar due to the non-linear
+# nature of the data
